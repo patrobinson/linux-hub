@@ -27,6 +27,6 @@ module LinuxHub
     puts GithubTeam.new(
       organisation: config["organisation"],
       team: config["team"],
-    ).users.inspect
+    ).users.collect(&:authorized_keys)
   end
 end
