@@ -4,8 +4,11 @@ require 'linux-hub/github_team'
 require 'linux-hub/github_user'
 require 'linux-hub/github'
 require 'linux-hub/linux_user'
+require 'linux-hub/cli'
 
 module LinuxHub
+  ACTIONS = [:list, :create_users]
+
   def self.invoke
     options = Trollop::options do
       opt :config_file, "The config file to read options from", type: :string, required: true
@@ -14,32 +17,25 @@ module LinuxHub
     end
 
     config = load_config(options[:config_file])
-    Github.instance.access_token = config["access_token"]
-
-    if options[:list]
-      list(config)
-    elsif options[:create_users]
-      create_users(config)
+    if config["access_token"].nil?
+      puts "You need an access token with 'read:org' permissions for the organisation"
+      exit 1
+    elsif config["organisation"].nil? || config["team"].nil?
+      puts "Please provide the team and organisation in the relevant config file"
     end
+
+    action = options.select { |k,v| ACTIONS.include?(k) && v == true }
+
+    unless action.length == 1
+      puts "Please specify one of the following action commands\n#{ACTIONS}"
+      exit 1
+    end
+
+    cli = CLI.new(config)
+    cli.send(action.keys.first)
   end
 
   def self.load_config(config_file)
     YAML.load_file(config_file)
-  end
-
-  def self.list(config)
-    puts GithubTeam.new(
-      organisation: config["organisation"],
-      team: config["team"],
-    ).users.collect(&:authorized_keys)
-  end
-
-  def self.create_users(config)
-    GithubTeam.new(
-      organisation: config["organisation"],
-      team: config["team"]
-    ).users.each do |user|
-      LinuxUser.new(username: user.username, groups: config["groups"], ssh_keys: user.ssh_keys).create
-    end
   end
 end
