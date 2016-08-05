@@ -39,7 +39,7 @@ module LinuxHub
       organisation: config["organisation"],
       team: config["team"]
     ).users.each do |user|
-      LinuxUser.new(user.username, config["groups"])
+      LinuxUser.new(user.username, config["groups"], user.ssh_keys)
     end
   end
 end
