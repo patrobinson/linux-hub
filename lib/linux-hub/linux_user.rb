@@ -12,6 +12,11 @@ module LinuxHub
       create_user_keys
     end
 
+    def delete
+      delete_home
+      delete_user
+    end
+
     # The default group is used to keep track of members
     # Members in this group not in the appropriate Github Team are purged
     def default_group
@@ -35,6 +40,15 @@ module LinuxHub
       # Don't create a group for this user
       # Create the home directory for this user
       %x(useradd -G #{@groups.join(',')} -N -m #{@username} )
+    end
+
+    def delete_user
+      return unless user_exists?
+      %x(userdel #{@username})
+    end
+
+    def delete_home
+      FileUtils.rm_r(home_dir)
     end
 
     def create_user_keys
