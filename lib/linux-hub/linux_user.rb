@@ -1,9 +1,12 @@
 module LinuxHub
   class LinuxUser
-    def initialize(username, groups, ssh_keys)
+    def initialize(username:, groups: [], ssh_keys: [])
       @username = username
       @groups = (groups || []) + [default_group]
       @ssh_keys = ssh_keys
+    end
+
+    def create
       create_default_group
       create_user
       create_user_keys
