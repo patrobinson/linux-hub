@@ -1,0 +1,6 @@
+#!/usr/bin/env ruby
+
+require 'trollop'
+require 'linux-hub'
+
+LinuxHub.invoke
