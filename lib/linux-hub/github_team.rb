@@ -1,11 +1,8 @@
-require 'octokit'
-
 module LinuxHub
   class GithubTeam
-    def initialize(organisation:, team:, access_token:)
+    def initialize(organisation:, team:)
       @org = organisation
       @team = team
-      @access_token = access_token
     end
 
     def users
@@ -32,7 +29,7 @@ module LinuxHub
     end
 
     def client
-      Octokit::Client.new(access_token: @access_token)
+      Github.instance.client
     end
   end
 end

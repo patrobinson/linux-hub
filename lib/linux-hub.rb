@@ -1,6 +1,8 @@
 require 'yaml'
+require 'octokit'
 require 'linux-hub/github_team'
 require 'linux-hub/github_user'
+require 'linux-hub/github'
 
 module LinuxHub
   def self.invoke
@@ -10,6 +12,7 @@ module LinuxHub
     end
 
     config = load_config(options[:config_file])
+    Github.instance.access_token = config["access_token"]
 
     if options[:list]
       list(config)
@@ -24,7 +27,6 @@ module LinuxHub
     puts GithubTeam.new(
       organisation: config["organisation"],
       team: config["team"],
-      access_token: config["access_token"]
     ).users.inspect
   end
 end
