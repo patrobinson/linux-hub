@@ -7,13 +7,14 @@ require 'linux-hub/linux_user'
 require 'linux-hub/cli'
 
 module LinuxHub
-  ACTIONS = [:list, :create_users]
+  ACTIONS = [:list, :create_users, :sync_users]
 
   def self.invoke
     options = Trollop::options do
       opt :config_file, "The config file to read options from", type: :string, required: true
       opt :list, "List users in the Github Team", type: :boolean
       opt :create_users, "Create users in the Github Team", type: :boolean
+      opt :sync_users, "Manage all users in the Github Team", type: :boolean
     end
 
     config = load_config(options[:config_file])

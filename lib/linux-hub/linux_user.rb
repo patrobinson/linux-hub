@@ -1,8 +1,26 @@
 module LinuxHub
   class LinuxUser
+    # The default group is used to keep track of members
+    # Members in this group not in the appropriate Github Team are purged
+    DEFAULT_GROUP = 'linuxhub'
+
+    def self.users_in_group
+      File.open("/etc/group") do |f|
+        f.each_line do |line|
+          user = line.split(":")
+          if user.first == DEFAULT_GROUP
+            return user[3].chomp.split(',').collect { |u| new(username: u) }
+          end
+        end
+      end
+      []
+    end
+
+    attr_reader :username
+
     def initialize(username:, groups: [], ssh_keys: [])
       @username = username
-      @groups = (groups || []) + [default_group]
+      @groups = (groups || []) + [DEFAULT_GROUP]
       @ssh_keys = ssh_keys
     end
 
@@ -17,21 +35,15 @@ module LinuxHub
       delete_user
     end
 
-    # The default group is used to keep track of members
-    # Members in this group not in the appropriate Github Team are purged
-    def default_group
-      'linuxhub'
-    end
-
     private
 
     def create_default_group
       return if group_exists?
-      %x(groupadd #{default_group})
+      %x(groupadd #{DEFAULT_GROUP})
     end
 
     def group_exists?
-      thing_exists? "/etc/group", default_group
+      thing_exists? "/etc/group", DEFAULT_GROUP
     end
 
     def create_user
@@ -39,7 +51,7 @@ module LinuxHub
       # Create the user and assign them to some groups
       # Don't create a group for this user
       # Create the home directory for this user
-      %x(useradd -G #{@groups.join(',')} -N -m #{@username} )
+      %x(useradd -G #{@groups.join(',')} -N -m #{@username})
     end
 
     def delete_user
