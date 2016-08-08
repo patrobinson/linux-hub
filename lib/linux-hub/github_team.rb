@@ -23,6 +23,8 @@ module LinuxHub
 
     def fetch_team_id
       team = client.organization_teams(@org).find { |t| t[:name] == @team }
+
+      fail "Could not find team #{@team}" if team.nil?
       team.id
     end
 
