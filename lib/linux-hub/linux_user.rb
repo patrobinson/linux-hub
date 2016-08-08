@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'etc'
 
 module LinuxHub
   class LinuxUser
@@ -7,16 +8,29 @@ module LinuxHub
     DEFAULT_GROUP = 'linuxhub'
 
     def self.users_in_group
-      File.open("/etc/group") do |f|
-        f.each_line do |line|
-          user = line.split(":")
-          if user.first == DEFAULT_GROUP
-            return user[3].chomp.split(',').collect { |u| new(username: u) }
-          end
-        end
-      end
-      []
+      return [] unless group_exists?
+      group_info.mem.collect { |u| new(username: u) }
     end
+
+    def self.create_default_group
+      return if group_exists?
+      %x(groupadd #{DEFAULT_GROUP})
+    end
+
+    def self.group_info
+      begin
+        @group_info ||= Etc::getgrnam(DEFAULT_GROUP)
+      rescue ArgumentError
+        nil
+      end
+    end
+
+    def self.group_exists?
+      !group_info.nil?
+    end
+
+    private_class_method :group_info, :group_exists?
+
 
     attr_reader :username
 
@@ -27,7 +41,7 @@ module LinuxHub
     end
 
     def create
-      create_default_group
+      self.class.create_default_group
       create_user
       create_user_keys
     end
@@ -38,15 +52,6 @@ module LinuxHub
     end
 
     private
-
-    def create_default_group
-      return if group_exists?
-      %x(groupadd #{DEFAULT_GROUP})
-    end
-
-    def group_exists?
-      thing_exists? "/etc/group", DEFAULT_GROUP
-    end
 
     def create_user
       return if user_exists?
@@ -77,32 +82,20 @@ module LinuxHub
     end
 
     def home_dir
-      File.open("/etc/passwd") do |f|
-        f.each_line do |line|
-          user = line.split(":")
-          if user.first == @username
-            return user[5]
-          end
-        end
+      fail "User not found!" unless user_exists?
+      user_info.dir
+    end
+
+    def user_info
+      begin
+        @user_info ||= Etc::getpwnam(@username)
+      rescue ArgumentError
+        nil
       end
-      fail "User not found!"
     end
 
     def user_exists?
-      thing_exists? "/etc/passwd", @username
-    end
-
-    def thing_exists?(file, value)
-      File.open(file) do |f|
-        f.each_line do |line|
-          user = line.split(":")
-          if user.first == value
-            f.close
-            return true
-          end
-        end
-      end
-      false
+      !user_info.nil?
     end
   end
 end
