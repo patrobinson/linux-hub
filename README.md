@@ -29,7 +29,7 @@ Example config:
 ---
 organisation: github
 team: sysadmins
-access_key: baconfoobar
+access_token: baconfoobar
 ```
 
 Example command:
