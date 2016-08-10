@@ -1,5 +1,6 @@
 require 'yaml'
 require 'octokit'
+require 'linux-hub/version'
 require 'linux-hub/github_team'
 require 'linux-hub/github_user'
 require 'linux-hub/github'

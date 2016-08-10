@@ -1,6 +1,11 @@
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+
+require 'linux-hub/version'
+
 Gem::Specification.new do |s|
   s.name        = 'linux-hub'
-  s.version     = '0.0.1'
+  s.version     = LinuxHub::VERSION
   s.summary     = "Linux users from Github"
   s.description = "Import linux users from Github Organisations and Teams"
   s.authors     = ["Patrick Robinson"]
