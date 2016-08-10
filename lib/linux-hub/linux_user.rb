@@ -1,3 +1,5 @@
+require 'fileutils'
+
 module LinuxHub
   class LinuxUser
     # The default group is used to keep track of members
