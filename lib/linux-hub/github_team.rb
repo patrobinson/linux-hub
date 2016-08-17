@@ -22,9 +22,7 @@ module LinuxHub
     end
 
     def fetch_team_id
-      client.auto_paginate = true
       team = client.organization_teams(@org).find { |t| t[:name] == @team }
-      client.auto_paginate = false
       team.id
     end
 

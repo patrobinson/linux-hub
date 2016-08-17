@@ -6,6 +6,7 @@ module LinuxHub
       @groups = config["groups"]
 
       Github.instance.access_token = config["access_token"]
+      Octokit.auto_paginate = true
     end
 
     def list
