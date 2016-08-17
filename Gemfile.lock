@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    linux-hub (0.0.2)
+    linux-hub (0.0.3)
       octokit
       trollop
 
