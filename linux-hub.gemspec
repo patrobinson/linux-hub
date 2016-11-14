@@ -19,4 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency 'octokit'
   s.add_dependency 'trollop'
+
+  s.add_development_dependency 'rspec'
+  s.add_development_dependency 'webmock'
 end
