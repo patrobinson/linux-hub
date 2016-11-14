@@ -5,12 +5,14 @@ describe LinuxHub::CLI do
   let(:team) { "bombers" }
   let(:groups) { ["admins"] }
   let(:access_token) { "sup3rs3kret" }
+  let(:shell) { "/bin/bash" }
   let(:config) do
     {
       "organisation" => organisation,
       "team" => team,
       "groups" => groups,
       "access_token" => access_token,
+      "shell" => shell,
     }
   end
   let(:ssh_keys) { ['abc123'] }
@@ -42,7 +44,8 @@ describe LinuxHub::CLI do
       it "creates the users in the default group" do
         expect(LinuxHub::LinuxUser).to receive(:new).with(username: "barry",
           groups: groups,
-          ssh_keys: ssh_keys)
+          ssh_keys: ssh_keys,
+          shell: shell)
         expect(linux_user).to receive(:create)
         subject.sync_users
       end

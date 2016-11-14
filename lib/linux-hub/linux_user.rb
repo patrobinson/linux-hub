@@ -34,10 +34,11 @@ module LinuxHub
 
     attr_reader :username
 
-    def initialize(username:, groups: [], ssh_keys: [])
+    def initialize(username:, groups: [], ssh_keys: [], shell:)
       @username = username
       @groups = (groups || []) + [DEFAULT_GROUP]
       @ssh_keys = ssh_keys
+      @shell = shell
     end
 
     def create
@@ -58,7 +59,7 @@ module LinuxHub
       # Create the user and assign them to some groups
       # Don't create a group for this user
       # Create the home directory for this user
-      %x(useradd -G #{@groups.join(',')} -N -m #{@username})
+      %x(useradd -s #{@shell} -G #{@groups.join(',')} -N -m #{@username})
     end
 
     def delete_user

@@ -4,6 +4,7 @@ module LinuxHub
       @organization = config["organisation"]
       @team = config["team"]
       @groups = config["groups"]
+      @shell = config["shell"] || "/bin/bash"
 
       Github.instance.access_token = config["access_token"]
       Octokit.auto_paginate = true
@@ -36,7 +37,8 @@ module LinuxHub
         LinuxUser.new(
           username: user.username,
           groups: @groups,
-          ssh_keys: user.ssh_keys
+          ssh_keys: user.ssh_keys,
+          shell: @shell
         ).create
       end
     end
